@@ -1,6 +1,7 @@
 # Import xbmc library to control osmc player
 import xbmc
 import time
+from random import *
 
 # Author: Khanh Vong
 # Description: Tv show automation
@@ -21,12 +22,16 @@ else:
     episodes = 0
 
 # Open to read number from bookmark.dat as an integer
-f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_bookmark.dat", "r")
-bookmark = int(f.readline())
+#f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_bookmark.dat", "r")
+#bookmark = int(f.readline())
 # Use modulus so that playlist will start over when we reach the end
+#start = bookmark
+#bookmark = ((bookmark + 8) % episodes) + 1
+#f.close()
+
+# Randomly pick a episode
+bookmark = randint(1, episodes);
 start = bookmark
-bookmark = ((bookmark + 8) % episodes) + 1
-f.close()
 
 # To know which episode to play
 # - Pick an episode and subtract 9 from it
