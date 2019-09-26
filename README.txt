@@ -8,6 +8,9 @@ Prerequisite:
 
 Features:
 	Python script will take the bookmark number and read that number of lines in playlist.dat.
-	From that position it will create a list of the next 9 episode ( if reach the end, loop over)
-	
+	From that position it will create a list of the next 9 episode ( if reach the end, loop over).
+	Random episode mode as also been added.
 	Shutdown in 3 hours.
+
+Instruction:
+	Simply put everything in ~.kodi/userdata/
