@@ -22,6 +22,7 @@ else:
     episodes = 0
 
 # Open to read number from bookmark.dat as an integer
+# Uncomment to watch the shows in order
 #f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_bookmark.dat", "r")
 #bookmark = int(f.readline())
 # Use modulus so that playlist will start over when we reach the end
