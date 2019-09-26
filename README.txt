@@ -1,6 +1,7 @@
 Description: Automatically play and turn off background tv show. ( Great for people who sleeps with the tv on )
 
 Prerequisite:
+	raspberry pi with OSMC installed
 	showname_bookmark.dat ( contain the index of the last episode played by osmc )
 	showname_episodelist.dat ( contain the names of all the video files in a list)
 	video files
