@@ -1,55 +1,41 @@
 # Import xbmc library to control osmc player
 import xbmc
 import time
-from random import *
 
 # Author: Khanh Vong
 # Description: Tv show automation
 
 # Pick show to play "HIMYM" or "FRIENDS"
-show = "DrakeAndJosh"
+#show = "FRIENDS"
 show = "HIMYM"
-show = "FRIENDS"
-show = "BigBang"
 
 # Directory where our videos are located
 d = "/media/ElementDrive/" + show + "/" 
-
-# Size of playlist
-size = 9
 
 # Change episode list depending on show
 if show == "HIMYM":
     episodes = 208
 elif show == "FRIENDS":
     episodes = 234
-elif show == "DrakeAndJosh":
-    episodes = 58
-elif show == "BigBang":
-    episodes = 159
 else:
     episodes = 0
 
 # Open to read number from bookmark.dat as an integer
-#f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_bookmark.dat", "r")
-#bookmark = int(f.readline())
+f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_bookmark.dat", "r")
+bookmark = int(f.readline())
 # Use modulus so that playlist will start over when we reach the end
-#start = bookmark
-#bookmark = ((bookmark + (size - 1)) % episodes) + 1
-#f.close()
-
-# Randomly pick a show
-bookmark = randint(1, episodes)
 start = bookmark
+bookmark = ((bookmark + 8) % episodes) + 1
+f.close()
 
 # To know which episode to play
 # - Pick an episode and subtract 9 from it
 
 
 # Open to update bookmark.dat for time we power on
-#f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_bookmark.dat", "w+")
-#f.write(str(bookmark)) #Note: subtract 4 to handle tv double powered on bug *works better with even playlist
-#f.close()
+f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_bookmark.dat", "w+")
+f.write(str(bookmark)) #Note: subtract 4 to handle tv double powered on bug *works better with even playlist
+f.close()
 
 # Open playlist.dat for reading
 f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_episodelist.dat", "r")
@@ -63,7 +49,7 @@ for i in range(episodes):
         episodelist = [ episode ]
         fw = open("/home/osmc/.kodi/userdata/Automation.dat/currentplaylist.dat", "w+")
         fw.write(str(episode) + '\n')
-        for j in range(size - 1):
+        for j in range(8):
             episode = f.readline().strip('\n')
             episode = d + episode
             episodelist.append( episode )
@@ -87,5 +73,5 @@ xbmc.Player().play(playlist)
 
 # Set timer for shutdown ( 200 minutes )
 # converted to seconds
-time.sleep(size * 60 * 23)
+time.sleep(12000)
 xbmc.shutdown()
