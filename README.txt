@@ -1,4 +1,4 @@
-Description: Automatically play and turn off background tv show. ( Great for people who sleeps with the tv on )
+Description: Automatically play and turn off background tv show. (Great for people who sleeps with the tv on.)
 
 Prerequisite:
 	raspberry pi with OSMC installed
@@ -10,7 +10,10 @@ Features:
 	Python script will take the bookmark number and read that number of lines in playlist.dat.
 	From that position it will create a list of the next 9 episode ( if reach the end, loop over).
 	Random episode mode as also been added.
-	Shutdown in 3 hours.
+	Variable playlist size based on time of day.
+		Shorter playlist during night time.
+		Longer playlist during day time.
+	Shutdown time dependent on playlist size.
 
 Instruction:
-	Simply put everything in ~.kodi/userdata/
+	Simply put content of file in ~.kodi/userdata/
