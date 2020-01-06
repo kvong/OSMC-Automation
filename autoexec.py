@@ -1,6 +1,7 @@
 # Import xbmc library to control osmc player
 import xbmc
 import time
+import datetime
 from random import *
 
 # Author: Khanh Vong
@@ -9,14 +10,22 @@ from random import *
 # Pick show to play "HIMYM" or "FRIENDS"
 show = "DrakeAndJosh"
 show = "HIMYM"
-show = "FRIENDS"
 show = "BigBang"
+show = "FRIENDS"
 
 # Directory where our videos are located
 d = "/media/ElementDrive/" + show + "/" 
 
-# Size of playlist
-size = 9
+# Get current time of day
+hour = datetime.datetime.now().hour
+
+# Set size of playlist according to time of day
+if hour > 9 and hour < 20:
+    # During day time set long playlist
+    size = 30
+else:
+    # Short playlist size for night
+    size = 9
 
 # Change episode list depending on show
 if show == "HIMYM":
@@ -26,7 +35,7 @@ elif show == "FRIENDS":
 elif show == "DrakeAndJosh":
     episodes = 58
 elif show == "BigBang":
-    episodes = 159
+    episodes = 279
 else:
     episodes = 0
 
@@ -85,7 +94,7 @@ for k in range(len(episodelist)):
 xbmc.Player().play(playlist)
 
 
-# Set timer for shutdown ( 200 minutes )
+# Set timer for shutdown after every episode in playlist is played
 # converted to seconds
-time.sleep(size * 60 * 23)
+time.sleep(size * 60 * 24)
 xbmc.shutdown()
