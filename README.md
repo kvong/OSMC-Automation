@@ -1,4 +1,4 @@
-# Description
+# Description:
 Automatically play and turn off background tv show. (Great for people who sleeps with the tv on.)
 
 # Prerequisite:
