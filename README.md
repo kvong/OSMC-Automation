@@ -5,7 +5,11 @@ Automatically play and turn off background tv show. (Great for people who sleeps
 	* Raspberry PI with OSMC installed
 	* SHOWNAME_bookmark.dat ( contain the index of the last episode played by osmc )
 	* SHOWNAME_episodelist.dat ( contain the names of all the video files in a list)
+	* SHOWNAME_mem.dat ( contain data for RRF scheduling )
+	* currentplaylist.dat
 	* Video files (must be playable by kodi)
+	* python2 numpy
+		* sudo apt install python-numpy
 
 # Features:
 	* Python script will take the bookmark number and read that number of lines in playlist.dat.
@@ -15,6 +19,7 @@ Automatically play and turn off background tv show. (Great for people who sleeps
 		* Shorter playlist during night time.
 		* Longer playlist during day time.
 	* Shutdown time dependent on playlist size.
+	* Random-First-Fit Scheduling for minimal overlapping between playlists
 
 # Instruction:
 	* Simply put content of file in ~.kodi/userdata/
