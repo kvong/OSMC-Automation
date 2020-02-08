@@ -13,19 +13,22 @@ show = "HIMYM"
 show = "BigBang"
 show = "FRIENDS"
 
-# Directory where our videos are located
-d = "/media/ElementDrive/" + show + "/" 
-
 # Get current time of day
 hour = datetime.datetime.now().hour
 
-# Set size of playlist according to time of day
-if hour > 9 and hour < 20:
+# Set size of playlist according to time of day 
+if hour > 8 and hour < 21:
     # During day time set long playlist
     size = 30
+    show = "BigBang"
 else:
     # Short playlist size for night
     size = 9
+    show = "FRIENDS"
+    show = "BigBang"
+
+# Directory where our videos are located
+d = "/media/ElementDrive/" + show + "/" 
 
 # Change episode list depending on show
 if show == "HIMYM":
@@ -39,26 +42,22 @@ elif show == "BigBang":
 else:
     episodes = 0
 
-# Open to read number from bookmark.dat as an integer
+## Open to read number from bookmark.dat as an integer
 #f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_bookmark.dat", "r")
 #bookmark = int(f.readline())
-# Use modulus so that playlist will start over when we reach the end
+## Use modulus so that playlist will start over when we reach the end
 #start = bookmark
 #bookmark = ((bookmark + (size - 1)) % episodes) + 1
 #f.close()
+## Update bookmark
+#f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_bookmark.dat", "w+")
+#f.write(str(bookmark)) 
+#f.close()
 
 # Randomly pick a show
+seed()
 bookmark = randint(1, episodes)
 start = bookmark
-
-# To know which episode to play
-# - Pick an episode and subtract 9 from it
-
-
-# Open to update bookmark.dat for time we power on
-#f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_bookmark.dat", "w+")
-#f.write(str(bookmark)) #Note: subtract 4 to handle tv double powered on bug *works better with even playlist
-#f.close()
 
 # Open playlist.dat for reading
 f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_episodelist.dat", "r")
