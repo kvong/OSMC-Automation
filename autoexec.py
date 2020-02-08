@@ -3,6 +3,7 @@ import xbmc
 import time
 import datetime
 from random import *
+import numpy as np
 
 # Author: Khanh Vong
 # Description: Tv show automation
@@ -49,29 +50,29 @@ else:
 
 
 if ( watch_option == sequential ):
-# Watch with bookmarks
-# Open to read number from bookmark.dat as an integer
+    # Watch with bookmarks
+    # Open to read number from bookmark.dat as an integer
     f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_bookmark.dat", "r")
-#bookmark = int(f.readline())
-## Use modulus so that playlist will start over when we reach the end
+    #bookmark = int(f.readline())
+    ## Use modulus so that playlist will start over when we reach the end
     start = bookmark
     bookmark = ((bookmark + (size - 1)) % episodes) + 1
     f.close()
-## Update bookmark
+    ## Update bookmark
     f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_bookmark.dat", "w+")
     f.write(str(bookmark)) 
     f.close()
-elif ( watch_option == randomize )
-# Watch at random
-# Randomly pick a show
+elif ( watch_option == randomize ):
+    # Watch at random
+    # Randomly pick a show
     seed()
     bookmark = randint(1, episodes)
     start = bookmark
 
-# Random First Fit Scheduling
+    # Random First Fit Scheduling
     f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_mem.dat", "r")
 
-# Bit vector for episodes
+    # Bit vector for episodes
     showlist = []
     indxlist = []
     count = 0
@@ -85,7 +86,7 @@ elif ( watch_option == randomize )
 
     bit = 0
 
-# Filling lists
+    # Filling lists
     for index, line in enumerate(f):
         if int(line[0]) != bit:
             available.append(bit)
@@ -109,11 +110,11 @@ elif ( watch_option == randomize )
         else:
             available.append(1)
 
-# Append final ending point at the end of list
+    # Append final ending point at the end of list
     block_stop.append(len(showlist))
     block_size = np.array(block_stop) - np.array(block_start)
 
-# Get random point
+    # Get random point
     seed()
     random_point = randint(0, len(showlist) - 1 - size)
 
@@ -125,7 +126,7 @@ elif ( watch_option == randomize )
 
     print(random_point)
 
-# If available list is empty, then the vector is all 0s
+    # If available list is empty, then the vector is all 0s
     if len(available) == 0:
         # Updating available vector; 
         for i in range(len(available_extend)):
