@@ -19,7 +19,7 @@ from random import seed
 from random import random
 
 # Random First Fit Scheduler function that takes in filename of file that has the resource vector { '0\n' ,'0\n' ,'0\n' ,'1\n' ,'1\n',... }
-def rff_scheduler(mem_filename):
+def rff_scheduler(mem_filename, size):
 
 # Open memory file
     f = open(mem_filename, "r")
@@ -28,7 +28,6 @@ def rff_scheduler(mem_filename):
     showlist = []
     indxlist = []
     count = 0
-    size = 9
 
     available = []
     available_extend = []
