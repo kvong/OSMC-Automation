@@ -67,14 +67,12 @@ elif ( watch_option == randomize ):
     # Open memory file
     f = open(mem_filename, "r")
 
-   # Bit vector for episodes
-    showlist = []
-    indxlist = []
-    count = 0
-
+   # Bit vector representing opening and occupied sequence (minimal representation)
     available = []
+   # Extended bit vector representing opening and occupied resources for the entire episode list (extended representation length equal to the total number of episodes in episodelist)
     available_extend = []
-    blocks = []
+
+   # Hold start and end index of a block
     block_start = [0]
     block_stop = []
 
@@ -83,9 +81,10 @@ elif ( watch_option == randomize ):
     print(bit)
     f.close()
 
+   # Filling representation vectors according to *mem.dat file
     f = open(mem_filename, "r")
-   # Filling lists
     for index, line in enumerate(f):
+        # Fill minimal representation vector on places where the bit change
         if int(line[0]) != bit:
             available.append(bit)
             block_start.append(index)
@@ -96,9 +95,6 @@ elif ( watch_option == randomize ):
 
             if index != 0:
                 block_stop.append(index)
-        showlist.append(line[0])
-        indxlist.append(index)
-        count += 1
         available_extend.append(bit)
     f.close()
 
@@ -109,7 +105,7 @@ elif ( watch_option == randomize ):
             available.append(1)
 
    # Append final ending point at the end of list
-    block_stop.append(len(showlist))
+    block_stop.append(episodes)
 
     print(block_start)
     print(block_stop)
@@ -121,12 +117,12 @@ elif ( watch_option == randomize ):
 
    # Get random point
     seed()
-    random_point = randint(1, len(showlist) - 1 - size)
+    random_point = randint(1, episodes - 1 - size)
 
    # If available list is empty, then the vector is all 0s
     if len(available) == 0:
         # Updating available vector; 
-        for i in range(len(available_extend)):
+        for i in range(episodes):
             # Flip the bits of the items that are in playlist
             if i == random_point - 1:
                 for j in range(size):
@@ -144,10 +140,11 @@ elif ( watch_option == randomize ):
         if open_index_length == 0:
             # If in the end of iterations and we can't find any blocks, then reset available vector to all 0s, and start any where
             print('Resetting blocks')
-            random_point = randint(1, len(available_extend) - 1 - size)
-            available_extend = [0 for k in range(len(available_extend))]
+            random_point = randint(1, episodes - 1 - size)
+            available_extend = [0 for k in range(episodes)]
             for k in range(size):
-                available_extend[random_point + k] = 1
+                if k >= size/3:
+                    available_extend[random_point + k] = 1
             print(available_extend)
         else:
             # Get random index from open_index
@@ -159,10 +156,11 @@ elif ( watch_option == randomize ):
                 # Check that the block is valid for playing
                 if block_start[i] <= random_point and block_stop[i] > random_point:
                     # Updating available vector for new block
-                    for j in range(len(available_extend)):
+                    for j in range(episodes):
                         if j == random_point - 1 or (random_point == 0 and j == 0):
                             for k in range(size):
-                                available_extend[random_point + k] = 1
+                                if k >= size/3:
+                                    available_extend[random_point + k] = 1
                             break
                     break
          
@@ -207,6 +205,7 @@ xbmc.Player().play(playlist)
 # converted to seconds
 time.sleep(size * 60 * 24)
 
+# Log playlist at the end of playthrough
 if ( watch_option == sequential ):
     ## Update bookmark
     f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_bookmark.dat", "w+")
@@ -218,15 +217,14 @@ elif ( watch_option == randomize ):
         # Write new available vector to file
         f = open(mem_filename, 'w')
         print('Writing blocks %d' % random_point)
-        f.writelines([str(available_extend[i]) + '\n' for i in range(len(available_extend)) if i > len(available_extend)/3])
+        f.writelines([str(available_extend[i]) + '\n' for i in range(episodes)])
         f.close()
     else:
         open_index_length = len(open_index)
         if open_index_length == 0:
             f = open(mem_filename, 'w')
-            for j in range(count):
-                if j < size/3:
-                    f.write(str(available_extend[j]) + '\n')
+            for j in range(episodes):
+                f.write(str(available_extend[j]) + '\n')
             f.close()
         else:
             for i in range(len(block_stop)):
@@ -235,8 +233,9 @@ elif ( watch_option == randomize ):
                     # Writing a the block to 'mem'
                     f = open(mem_filename, 'w')
                     print('Writing blocks %d' % random_point)
-                    f.writelines([str(available_extend[j]) + '\n' for j in range(len(available_extend)) if j > len(available_extend)/3])
+                    f.writelines([str(available_extend[j]) + '\n' for j in range(episodes)])
                     print(available_extend)
                     f.close()
                     break
+                
 xbmc.shutdown()
