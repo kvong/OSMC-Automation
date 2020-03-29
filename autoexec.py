@@ -4,7 +4,7 @@ import time
 import datetime
 from random import *
 import numpy as np
-from scheduler import rrf_scheduler
+#from scheduler import rrf_scheduler
 
 # Author: Khanh Vong
 # Description: Tv show automation
@@ -26,12 +26,12 @@ hour = datetime.datetime.now().hour
 # Set size of playlist according to time of day 
 if hour > 8 and hour < 21:
     # During day time set long playlist
-    size = 30
+    size = 9
     show = "BigBang"
+    show = "FRIENDS"
 else:
     # Short playlist size for night
     size = 9
-    show = "BigBang"
     show = "FRIENDS"
 
 # Directory where our videos are located
@@ -49,6 +49,7 @@ elif show == "BigBang":
 else:
     episodes = 0
 
+random_point = 0
 
 if ( watch_option == sequential ):
     # Watch with bookmarks
@@ -59,15 +60,116 @@ if ( watch_option == sequential ):
     start = bookmark
     bookmark = ((bookmark + (size - 1)) % episodes) + 1
     f.close()
-    ## Update bookmark
-    f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_bookmark.dat", "w+")
-    f.write(str(bookmark)) 
-    f.close()
 elif ( watch_option == randomize ):
     mem_filename = "/home/osmc/.kodi/userdata/Automation.dat/" + show + "_mem.dat"
     # Watch at random
-    start = rff_scheduler(mem_filename, size)
+    # Random First Fit Scheduler function that takes in filename of file that has the resource vector { '0\n' ,'0\n' ,'0\n' ,'1\n' ,'1\n',... }
+    # Open memory file
+    f = open(mem_filename, "r")
 
+   # Bit vector for episodes
+    showlist = []
+    indxlist = []
+    count = 0
+
+    available = []
+    available_extend = []
+    blocks = []
+    block_start = [0]
+    block_stop = []
+
+    first_line = f.readline()
+    bit = int(first_line[0])
+    print(bit)
+    f.close()
+
+    f = open(mem_filename, "r")
+   # Filling lists
+    for index, line in enumerate(f):
+        if int(line[0]) != bit:
+            available.append(bit)
+            block_start.append(index)
+            if bit == 1:
+                bit = 0
+            elif bit == 0:
+                bit = 1
+
+            if index != 0:
+                block_stop.append(index)
+        showlist.append(line[0])
+        indxlist.append(index)
+        count += 1
+        available_extend.append(bit)
+    f.close()
+
+    if len(available) != 0:
+        if available[len(available) -1] == 1:
+            available.append(0)
+        else:
+            available.append(1)
+
+   # Append final ending point at the end of list
+    block_stop.append(len(showlist))
+
+    print(block_start)
+    print(block_stop)
+
+    block_size = np.array(block_stop) - np.array(block_start)
+
+    print(available_extend)
+    print(available)
+
+   # Get random point
+    seed()
+    random_point = randint(1, len(showlist) - 1 - size)
+
+   # If available list is empty, then the vector is all 0s
+    if len(available) == 0:
+        # Updating available vector; 
+        for i in range(len(available_extend)):
+            # Flip the bits of the items that are in playlist
+            if i == random_point - 1:
+                for j in range(size):
+                    available_extend[random_point + j] = 1
+                break
+    else:
+        open_index = []
+        # Find opening block
+        for i in range(len(block_stop)):
+            # If block size has enough space available and unoccupied
+            if block_stop[i] - block_start[i] > size and available[i] != 1:
+                open_index.append(i)
+        
+        open_index_length = len(open_index)
+        if open_index_length == 0:
+            # If in the end of iterations and we can't find any blocks, then reset available vector to all 0s, and start any where
+            print('Resetting blocks')
+            random_point = randint(1, len(available_extend) - 1 - size)
+            available_extend = [0 for k in range(len(available_extend))]
+            for k in range(size):
+                available_extend[random_point + k] = 1
+            print(available_extend)
+        else:
+            # Get random index from open_index
+            random_index = randint(0, open_index_length - 1)
+            random_open = open_index[random_index]
+            # Pick a random point in the block we are looking at
+            random_point = randint(block_start[random_open], block_stop[random_open] - size)
+            for i in range(len(block_stop)):
+                # Check that the block is valid for playing
+                if block_start[i] <= random_point and block_stop[i] > random_point:
+                    # Updating available vector for new block
+                    for j in range(len(available_extend)):
+                        if j == random_point - 1 or (random_point == 0 and j == 0):
+                            for k in range(size):
+                                available_extend[random_point + k] = 1
+                            break
+                    break
+         
+    print('starting point of playlist is %d' % random_point)
+    start = random_point
+     
+episodelist = []
 # Write to current playlist
 # Open playlist.dat for reading
 f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_episodelist.dat", "r")
@@ -78,7 +180,7 @@ for i in range(episodes):
     if i + 1 == start :
         # Read line from playlist.dat removing \n at the end
         episode = d + episode
-        episodelist = [ episode ]
+        episodelist.append( episode )
         fw = open("/home/osmc/.kodi/userdata/Automation.dat/currentplaylist.dat", "w+")
         fw.write(str(episode) + '\n')
         for j in range(size - 1):
@@ -89,7 +191,6 @@ for i in range(episodes):
         fw.close()
         break
 f.close()
-
 
 # Get osmc current playlist and clear it
 playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
@@ -102,8 +203,40 @@ for k in range(len(episodelist)):
 # Play videos
 xbmc.Player().play(playlist)
 
-
 # Set timer for shutdown after every episode in playlist is played
 # converted to seconds
 time.sleep(size * 60 * 24)
+
+if ( watch_option == sequential ):
+    ## Update bookmark
+    f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_bookmark.dat", "w+")
+    f.write(str(bookmark)) 
+    f.close()
+elif ( watch_option == randomize ):
+   # If available list is empty, then the vector is all 0s
+    if len(available) == 0:
+        # Write new available vector to file
+        f = open(mem_filename, 'w')
+        print('Writing blocks %d' % random_point)
+        f.writelines([str(available_extend[i]) + '\n' for i in range(len(available_extend)) if i > len(available_extend)/3])
+        f.close()
+    else:
+        open_index_length = len(open_index)
+        if open_index_length == 0:
+            f = open(mem_filename, 'w')
+            for j in range(count):
+                if j < size/3:
+                    f.write(str(available_extend[j]) + '\n')
+            f.close()
+        else:
+            for i in range(len(block_stop)):
+                # Check that the block is valid for playing
+                if block_start[i] <= random_point and block_stop[i] > random_point:
+                    # Writing a the block to 'mem'
+                    f = open(mem_filename, 'w')
+                    print('Writing blocks %d' % random_point)
+                    f.writelines([str(available_extend[j]) + '\n' for j in range(len(available_extend)) if j > len(available_extend)/3])
+                    print(available_extend)
+                    f.close()
+                    break
 xbmc.shutdown()
