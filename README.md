@@ -3,6 +3,7 @@ Automatically play and turn off background tv show. (Great for people who sleeps
 
 # Prerequisite:
 	* Raspberry PI with OSMC installed
+		* Guide: https://flixed.io/install-osmc-raspberry-pi/
 	* SHOWNAME_bookmark.dat ( contain the index of the last episode played by osmc )
 	* SHOWNAME_episodelist.dat ( contain the names of all the video files in a list)
 	* SHOWNAME_mem.dat ( contain data for RRF scheduling )
@@ -11,6 +12,9 @@ Automatically play and turn off background tv show. (Great for people who sleeps
 	* python2 numpy
 		* sudo apt install python-numpy
 	* ffmpeg to get video durations.
+	
+# Install:
+	$ ./install.sh
 
 # Features:
 	* Python script will take the bookmark number and read that number of lines in playlist.dat.
