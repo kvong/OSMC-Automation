@@ -10,11 +10,11 @@ Automatically play and turn off background tv show. (Great for people who sleeps
 - currentplaylist.dat
 - Video files (must be playable by kodi)
 - Python2 NumPy
-	* sudo apt install python-numpy
+	sudo apt install python-numpy
 - ffmpeg to get video durations.
 	
 # Install:
-	* $ ./install.sh
+	$ ./install.sh
 
 # Features:
 - Python script will take the bookmark number and read that number of lines in playlist.dat.
