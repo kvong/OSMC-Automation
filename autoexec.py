@@ -1,13 +1,14 @@
+##########################################################################################
+# Author: Khanh Vong
+# Description: Tv show automation
+##########################################################################################
+
 # Import xbmc library to control osmc player
 import xbmc
 import time
 import datetime
 from random import *
 import numpy as np
-#from scheduler import rrf_scheduler
-
-# Author: Khanh Vong
-# Description: Tv show automation
 
 # Set watch option
 randomize = 1
@@ -26,7 +27,7 @@ hour = datetime.datetime.now().hour
 # Set size of playlist according to time of day 
 if hour > 8 and hour < 21:
     # During day time set long playlist
-    size = 9
+    size = 18
     show = "BigBang"
     show = "FRIENDS"
 else:
@@ -34,8 +35,16 @@ else:
     size = 9
     show = "FRIENDS"
 
+# Set log time to log episodes into memory files
+log_time = 2 * 60 * 60
+total_playtime = size * 60 * 24
+remaining_time = total_playtime - log_time
+
 # Directory where our videos are located
 d = "/media/ElementDrive/" + show + "/" 
+
+# Path to debug file
+debug = "/home/osmc/.kodi/userdata/Automation.dat/debug.log"
 
 # Change episode list depending on show
 if show == "HIMYM":
@@ -55,10 +64,8 @@ if ( watch_option == sequential ):
     # Watch with bookmarks
     # Open to read number from bookmark.dat as an integer
     f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_bookmark.dat", "r")
-    #bookmark = int(f.readline())
-    ## Use modulus so that playlist will start over when we reach the end
+    bookmark = int(f.readline())
     start = bookmark
-    bookmark = ((bookmark + (size - 1)) % episodes) + 1
     f.close()
 elif ( watch_option == randomize ):
     mem_filename = "/home/osmc/.kodi/userdata/Automation.dat/" + show + "_mem.dat"
@@ -119,15 +126,9 @@ elif ( watch_option == randomize ):
     seed()
     random_point = randint(1, episodes - 1 - size)
 
-   # If available list is empty, then the vector is all 0s
+   # If available list is empty, then set the vector is 0s
     if len(available) == 0:
-        # Updating available vector; 
-        for i in range(episodes):
-            # Flip the bits of the items that are in playlist
-            if i == random_point - 1:
-                for j in range(size):
-                    available_extend[random_point + j] = 1
-                break
+        available_extend = [0 for k in range(episodes)]
     else:
         open_index = []
         # Find opening block
@@ -142,9 +143,6 @@ elif ( watch_option == randomize ):
             print('Resetting blocks')
             random_point = randint(1, episodes - 1 - size)
             available_extend = [0 for k in range(episodes)]
-            for k in range(size):
-                if k >= size/3:
-                    available_extend[random_point + k] = 1
             print(available_extend)
         else:
             # Get random index from open_index
@@ -158,9 +156,6 @@ elif ( watch_option == randomize ):
                     # Updating available vector for new block
                     for j in range(episodes):
                         if j == random_point - 1 or (random_point == 0 and j == 0):
-                            for k in range(size):
-                                if k >= size/3:
-                                    available_extend[random_point + k] = 1
                             break
                     break
          
@@ -168,6 +163,7 @@ elif ( watch_option == randomize ):
     start = random_point
      
 episodelist = []
+entire_episodelist = []
 # Write to current playlist
 # Open playlist.dat for reading
 f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_episodelist.dat", "r")
@@ -187,7 +183,7 @@ for i in range(episodes):
             episodelist.append( episode )
             fw.write(str(episode) + '\n')
         fw.close()
-        break
+    entire_episodelist.append( episode )
 f.close()
 
 # Get osmc current playlist and clear it
@@ -201,41 +197,67 @@ for k in range(len(episodelist)):
 # Play videos
 xbmc.Player().play(playlist)
 
-# Set timer for shutdown after every episode in playlist is played
-# converted to seconds
-time.sleep(size * 60 * 24)
+##########################################################################################
+# Function to get duration of video using ffprobe. #
+##########################################################################################
 
-# Log playlist at the end of playthrough
-if ( watch_option == sequential ):
-    ## Update bookmark
-    f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_bookmark.dat", "w+")
-    f.write(str(bookmark)) 
-    f.close()
-elif ( watch_option == randomize ):
-   # If available list is empty, then the vector is all 0s
-    if len(available) == 0:
-        # Write new available vector to file
-        f = open(mem_filename, 'w')
-        print('Writing blocks %d' % random_point)
-        f.writelines([str(available_extend[i]) + '\n' for i in range(episodes)])
+import subprocess
+
+def get_duration(filename):
+    result = subprocess.check_output(["/home/osmc/ffmpeg/ffprobe", "-v", "error", "-show_entries", 
+            "format=duration", "-of", "default=noprint_wrappers=1:nokey=1",
+            filename])
+    return float(result)
+
+##########################################################################################
+
+# Log episode watched into list
+for k in range(size):
+    # Update episode list one at a time
+    available_extend[random_point + k] = 1
+
+    episode_filename = d + entire_episodelist[random_point + k]
+
+    # Log playlist at the end of playthrough
+    if ( watch_option == sequential ):
+        ## Use modulus so that playlist will start over when we reach the end
+        bookmark = (bookmark % episodes) + 1
+
+        ## Update bookmark
+        f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_bookmark.dat", "w+")
+        f.write(str(bookmark)) 
         f.close()
-    else:
-        open_index_length = len(open_index)
-        if open_index_length == 0:
+    elif ( watch_option == randomize ):
+       # If available list is empty, then the vector is all 0s
+        if len(available) == 0:
+            # Write new available vector to file
             f = open(mem_filename, 'w')
-            for j in range(episodes):
-                f.write(str(available_extend[j]) + '\n')
+            print('Writing blocks %d' % random_point)
+            f.writelines([str(available_extend[i]) + '\n' for i in range(episodes)])
             f.close()
         else:
-            for i in range(len(block_stop)):
-                # Check that the block is valid for playing
-                if block_start[i] <= random_point and block_stop[i] > random_point:
-                    # Writing a the block to 'mem'
-                    f = open(mem_filename, 'w')
-                    print('Writing blocks %d' % random_point)
-                    f.writelines([str(available_extend[j]) + '\n' for j in range(episodes)])
-                    print(available_extend)
-                    f.close()
-                    break
-                
+            open_index_length = len(open_index)
+            if open_index_length == 0:
+                f = open(mem_filename, 'w')
+                for j in range(episodes):
+                    f.write(str(available_extend[j]) + '\n')
+                f.close()
+            else:
+                for i in range(len(block_stop)):
+                    # Check that the block is valid for playing
+                    if block_start[i] <= random_point and block_stop[i] > random_point:
+                        # Writing a the block to 'mem'
+                        f = open(mem_filename, 'w')
+                        print('Writing blocks %d' % random_point)
+                        f.writelines([str(available_extend[j]) + '\n' for j in range(episodes)])
+                        print(available_extend)
+                        f.close()
+                        break
+
+    episode_duration = get_duration(episode_filename)
+
+    # Sleep until episode ends
+    time.sleep( episode_duration )
+
+# Log playlist at the end of playthrough
 xbmc.shutdown()
