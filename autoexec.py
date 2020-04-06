@@ -1,6 +1,6 @@
 ##########################################################################################
 # Author: Khanh Vong
-# Description: Tv show automation
+# Description: RaspberryPi Tv show automation player.
 ##########################################################################################
 
 # Import xbmc library to control osmc player
@@ -10,10 +10,12 @@ import datetime
 from random import *
 import numpy as np
 
-# Set watch option
+# Watch option constants
 randomize = 1
 sequential = 0
-watch_option = randomize
+
+# Set watch option
+watch_option = sequential
 
 # Pick show to play "HIMYM" or "FRIENDS"
 show = "DrakeAndJosh"
@@ -35,16 +37,8 @@ else:
     size = 9
     show = "FRIENDS"
 
-# Set log time to log episodes into memory files
-log_time = 2 * 60 * 60
-total_playtime = size * 60 * 24
-remaining_time = total_playtime - log_time
-
 # Directory where our videos are located
 d = "/media/ElementDrive/" + show + "/" 
-
-# Path to debug file
-debug = "/home/osmc/.kodi/userdata/Automation.dat/debug.log"
 
 # Change episode list depending on show
 if show == "HIMYM":
@@ -58,6 +52,7 @@ elif show == "BigBang":
 else:
     episodes = 0
 
+# Set a random play point initially to 0
 random_point = 0
 
 if ( watch_option == sequential ):
@@ -88,7 +83,7 @@ elif ( watch_option == randomize ):
     print(bit)
     f.close()
 
-   # Filling representation vectors according to *mem.dat file
+    # Filling representation vectors according to *mem.dat file
     f = open(mem_filename, "r")
     for index, line in enumerate(f):
         # Fill minimal representation vector on places where the bit change
@@ -134,7 +129,7 @@ elif ( watch_option == randomize ):
         # Find opening block
         for i in range(len(block_stop)):
             # If block size has enough space available and unoccupied
-            if block_stop[i] - block_start[i] > size and available[i] != 1:
+            if block_stop[i] - block_start[i] >= size and available[i] != 1:
                 open_index.append(i)
         
         open_index_length = len(open_index)
@@ -150,15 +145,6 @@ elif ( watch_option == randomize ):
             random_open = open_index[random_index]
             # Pick a random point in the block we are looking at
             random_point = randint(block_start[random_open], block_stop[random_open] - size)
-            for i in range(len(block_stop)):
-                # Check that the block is valid for playing
-                if block_start[i] <= random_point and block_stop[i] > random_point:
-                    # Updating available vector for new block
-                    for j in range(episodes):
-                        if j == random_point - 1 or (random_point == 0 and j == 0):
-                            break
-                    break
-         
     print('starting point of playlist is %d' % random_point)
     start = random_point
      
@@ -213,10 +199,8 @@ def get_duration(filename):
 
 # Log episode watched into list
 for k in range(size):
-    # Update episode list one at a time
-    available_extend[random_point + k] = 1
-
-    episode_filename = d + entire_episodelist[random_point + k]
+    # Get current episode name
+    episode_filename = d + entire_episodelist[start + k]
 
     # Log playlist at the end of playthrough
     if ( watch_option == sequential ):
@@ -228,7 +212,10 @@ for k in range(size):
         f.write(str(bookmark)) 
         f.close()
     elif ( watch_option == randomize ):
-       # If available list is empty, then the vector is all 0s
+        # Update episode list one at a time
+        available_extend[random_point + k] = 1
+
+        # If available list is empty, then the vector is all 0s
         if len(available) == 0:
             # Write new available vector to file
             f = open(mem_filename, 'w')
