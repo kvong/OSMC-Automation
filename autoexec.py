@@ -244,18 +244,22 @@ for k in range(size):
     episode_duration = get_duration(episode_filename)
 
     # Create a summary file for quick viewing without looking into dat files
-    f_info = f.open('/home/osmc/.kodi/userdata/Automation.dat/summary.dat', 'w+')
-    f_info.write('Current show: %s' % (show))
+    f_info = open('/home/osmc/.kodi/userdata/Automation.dat/summary.dat', 'w+')
+    f_info.write('Current show: %s\n' % (show))
     f_info.write('Current episode: %d\n' % (start + k))
     f_info.write('Current playlist:\n')
     for i in range(size):
         if i == k:
-            f_info.write('> %s\n' % (entire_episodelist[start + i]))
+            f_info.write('> %d. %s\n' % ( i + 1, entire_episodelist[start + i]))
         else:
-            f_info.write('%s\n' % (entire_episodelist[start + i]))
-    
+            f_info.write('  %d. %s\n' % ( i + 1, entire_episodelist[start + i]))
+    f_info.close()
     # Sleep until episode ends
     time.sleep( episode_duration )
+
+f_info = open('/home/osmc/.kodi/userdata/Automation.dat/summary.dat', 'w+')
+f_info.write('No show playing at the moment.\n')
+f_info.close()
 
 # Log playlist at the end of playthrough
 xbmc.shutdown()
