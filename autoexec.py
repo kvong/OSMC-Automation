@@ -243,6 +243,17 @@ for k in range(size):
 
     episode_duration = get_duration(episode_filename)
 
+    # Create a summary file for quick viewing without looking into dat files
+    f_info = f.open('/home/osmc/.kodi/userdata/Automation.dat/summary.dat', 'w+')
+    f_info.write('Current show: %s' % (show))
+    f_info.write('Current episode: %d\n' % (start + k))
+    f_info.write('Current playlist:\n')
+    for i in range(size):
+        if i == k:
+            f_info.write('> %s\n' % (entire_episodelist[start + i]))
+        else:
+            f_info.write('%s\n' % (entire_episodelist[start + i]))
+    
     # Sleep until episode ends
     time.sleep( episode_duration )
 

@@ -1,0 +1,6 @@
+alias vi='vim'
+alias autoexec='vi ~/.kodi/userdata/autoexec.py'
+alias info='cat ~/.kodi/userdata/Automation.dat/summary.dat'
+alias cd.='cd ..'
+alias brc='vi ~/.bashrc'
+alias sob='source ~/.bashrc && echo .bashrc Updated'
