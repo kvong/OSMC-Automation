@@ -1,7 +1,7 @@
 echo "Install script should be executed in the '/home/osmc/OSMC-Automation/' directory. Do you wish to continue? [y/n]"
 read choice
 
-if [ choice == 'y' ] || [ choice == 'Y' ] || [ choice == 'yes' ] ||| [ choice == 'YES' ] 
+if [ choice == 'y' ] || [ choice == 'Y' ] || [ choice == 'yes' ] || [ choice == 'YES' ] 
 then
     echo Updating repos...
     sudo apt-get -y update
