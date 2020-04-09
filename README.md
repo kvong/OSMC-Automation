@@ -1,7 +1,7 @@
-# Description:
+### Description:
 Automatically play and turn off background tv show with RPi. (Great for people who sleeps with the tv on.)
 
-# Prerequisite:
+### Prerequisite:
 - Raspberry PI with OSMC installed.
 	- Guide: https://flixed.io/install-osmc-raspberry-pi/
 - SHOWNAME_bookmark.dat ( contain the index of the last episode played by osmc )
@@ -11,11 +11,15 @@ Automatically play and turn off background tv show with RPi. (Great for people w
 - Video files (must be playable by kodi)
 - Python2 NumPy
 - ffmpeg to get video durations.
-	
-# Install:
-	$ ./install.sh
 
-# Features:
+### Install:
+	- Instruction to [login](1https://osmc.tv/wiki/general/accessing-the-command-line/)
+		- Note: It's better to install locally than over SSH as this may take a while.
+	'''
+	$ ./install.sh
+	'''
+	
+### Features:
 - Python script will take the bookmark number and read that number of lines in playlist.dat.
 - From that position it will create a list of the next 9 episode ( if reach the end, loop over).
 - Random episode mode as also been added.
@@ -24,4 +28,4 @@ Automatically play and turn off background tv show with RPi. (Great for people w
 	- Longer playlist during day time.
 - Shutdown time dependent on playlist size and total episodes duration.
 - Random-First-Fit Scheduling for minimal overlapping between playlists.
-	* Record episodes as it is played instead of all at once.
+	- Record episodes as it is played instead of all at once.
