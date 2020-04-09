@@ -13,7 +13,7 @@ Automatically play and turn off background tv show with RPi. (Great for people w
 - ffmpeg to get video durations.
 
 ### Install:
-- Instruction to [login](1https://osmc.tv/wiki/general/accessing-the-command-line/)
+- Instruction to [login](https://osmc.tv/wiki/general/accessing-the-command-line/)
 	- Note: It's better to install locally than over SSH as this may take a while.
 	1. Clone this repository to `$HOME` which should be `/home/osmc/`.
 	2. Run installation script:
