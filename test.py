@@ -3,8 +3,6 @@
 # Description: RaspberryPi Tv show automation player.
 ##########################################################################################
 
-# Import xbmc library to control osmc player
-import xbmc     # REMOVE FOR TEST
 import time
 import datetime
 from random import *
@@ -18,9 +16,6 @@ sequential = 0
 watch_option = sequential
 
 # Pick show to play "HIMYM" or "FRIENDS"
-show = "DrakeAndJosh"
-show = "BigBang"
-show = "FRIENDS"
 show = "test"
 
 # Get current time of day
@@ -30,14 +25,11 @@ hour = datetime.datetime.now().hour
 if hour > 8 and hour < 21:
     # During day time set long playlist
     size = 18
-    show = "BigBang"
-    show = "FRIENDS"
-    #show = "test"      # UNCOMMENT FOR TEST
+    show = "test"
 else:
     # Short playlist size for night
     size = 9
-    show = "FRIENDS"
-    #show = "test"      # UNCOMMENT FOR TEST
+    show = "test"
 
 # Directory where our videos are located
 d = "/media/ElementDrive/" + show + "/" 
@@ -45,14 +37,8 @@ d = "/media/ElementDrive/" + show + "/"
 # Change episode list depending on show
 if show == "HIMYM":
     episodes = 208
-elif show == "FRIENDS":
+if show == "test":
     episodes = 234
-elif show == "DrakeAndJosh":
-    episodes = 58
-elif show == "BigBang":
-    episodes = 279
-else:
-    episodes = 0
 
 # Set a random play point initially to 0
 random_point = 0
@@ -63,6 +49,7 @@ if ( watch_option == sequential ):
     f = open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_bookmark.dat", "r")
     bookmark = int(f.readline())
     start = bookmark
+    print('Current bookmark: %d' % bookmark)
     f.close()
 elif ( watch_option == randomize ):
     mem_filename = "/home/osmc/.kodi/userdata/Automation.dat/" + show + "_mem.dat"
@@ -177,19 +164,8 @@ for i in range(episodes):
     entire_episodelist.append( episode )
 f.close()
 
-// Add padding at the end of entire_episodelist
-entire_episodelist.extend( entire_episodelist )
-
-# Get osmc current playlist and clear it           # REMOVE ON TEST 
-playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)      # REMOVE ON TEST 
-playlist.clear()                                   # REMOVE ON TEST 
-    
-# Add list to playlist                             # REMOVE ON TEST 
-for k in range(len(episodelist)):                  # REMOVE ON TEST 
-    playlist.add(str(episodelist[k]))              # REMOVE ON TEST 
-
-# Play videos                                      # REMOVE ON TEST 
-xbmc.Player().play(playlist)                       # REMOVE ON TEST 
+entire_episodelist.extend(entire_episodelist)
+print(entire_episodelist)
 
 ##########################################################################################
 # Function to get duration of video using ffprobe. #
@@ -212,6 +188,9 @@ for k in range(size):
 
     # Log playlist at the end of playthrough
     if ( watch_option == sequential ):
+        print('watching %d: current bookmark is %d' % (k, bookmark))
+        print('((bookmark + k) mod episodes) + 1 = ((%d + %d) mod %d) + 1 = %d' % (bookmark, k, episodes, bookmark))
+
         ## Use modulus so that playlist will start over when we reach the end
         bookmark = (bookmark % episodes) + 1
 
@@ -249,7 +228,7 @@ for k in range(size):
                         f.close()
                         break
 
-    episode_duration = get_duration(episode_filename)       # REMOVE ON TEST
+    #episode_duration = get_duration(episode_filename)
 
     # Create a summary file for quick viewing without looking into dat files
     f_info = open('/home/osmc/.kodi/userdata/Automation.dat/summary.dat', 'w+')
@@ -262,14 +241,8 @@ for k in range(size):
         else:
             f_info.write('  %d. %s\n' % ( i + 1, current_playlist[i]))
     f_info.close()
-    # Sleep until episode ends         # REMOVE ON TEST 
-    time.sleep( episode_duration )     # REMOVE ON TEST 
 
-time.sleep(60*3)                       # REMOVE ON TEST
 
 f_info = open('/home/osmc/.kodi/userdata/Automation.dat/summary.dat', 'w+')
 f_info.write('No show playing at the moment.\n')
 f_info.close()
-
-# Log playlist at the end of playthrough    # REMOVE ON TEST
-xbmc.shutdown()                             # REMOVE ON TEST 
