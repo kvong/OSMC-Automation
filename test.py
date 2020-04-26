@@ -3,19 +3,11 @@
 # Description: RaspberryPi Tv show automation player.
 ##########################################################################################
 
-from scheduler import RandomFirstFit
+from scheduler import Scheduler
 import time
 import datetime
 from random import *
 import numpy as np
-import ConfigParser
-
-config = ConfigParser.RawConfigParser()
-config.read('test.cfg')
-
-print(config.sections())
-all_section = config.sections()
-print(config.items('Section 1'))
 
 # Watch option constants
 randomize = 1
@@ -61,7 +53,7 @@ if ( watch_option == sequential ):
     f.close()
 elif ( watch_option == randomize ):
     mem_filename = "/home/osmc/.kodi/userdata/Automation.dat/" + show + "_mem.dat"
-    random_point, available, available_extend, block_start, block_stop, open_index = RandomFirstFit(mem_filename, episodes, size)
+    random_point, available, available_extend, block_start, block_stop, open_index = Scheduler.RandomFirstFit(mem_filename, episodes, size)
     start = random_point
      
 episodelist = []
@@ -140,6 +132,9 @@ for k in range(size):
                 for j in range(episodes):
                     f.write(str(available_extend[j]) + '\n')
                 f.close()
+                print('Writing blocks %d' % (random_point + count))
+                count += 1
+                print(available_extend)
             else:
                 for i in range(len(block_stop)):
                     # Check that the block is valid for playing
@@ -154,6 +149,7 @@ for k in range(size):
                         break
 
     #episode_duration = get_duration(episode_filename)
+    time.sleep(1)
 
     # Create a summary file for quick viewing without looking into dat files
     f_info = open('/home/osmc/.kodi/userdata/Automation.dat/summary.dat', 'w+')
