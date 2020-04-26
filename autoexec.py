@@ -16,7 +16,7 @@ randomize = 1
 sequential = 0
 
 # Set watch option
-watch_option = sequential
+watch_option = randomize
 
 # Pick show to play "HIMYM" or "FRIENDS"
 show = "DrakeAndJosh"
@@ -68,6 +68,7 @@ if ( watch_option == sequential ):
 elif ( watch_option == randomize ):
     mem_filename = "/home/osmc/.kodi/userdata/Automation.dat/" + show + "_mem.dat"
     random_point, available, available_extend, block_start, block_stop, open_index = Scheduler.RandomFirstFit(mem_filename, episodes, size)
+    start = random_point
      
 episodelist = []
 entire_episodelist = []

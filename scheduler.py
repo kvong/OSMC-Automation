@@ -23,6 +23,9 @@ class Scheduler:
         block_start = [0]
         block_stop = []
 
+        # Store openings
+        open_index = []
+
         first_line = f.readline()
         bit = int(first_line[0])
         print(bit)
@@ -70,7 +73,6 @@ class Scheduler:
         if len(available) == 0:
             available_extend = [0 for k in range(episodes)]
         else:
-            open_index = []
             # Find opening block
             for i in range(len(block_stop)):
                 # If block size has enough space available and unoccupied
