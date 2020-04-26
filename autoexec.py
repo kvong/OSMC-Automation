@@ -177,7 +177,7 @@ for i in range(episodes):
     entire_episodelist.append( episode )
 f.close()
 
-// Add padding at the end of entire_episodelist
+# Add padding at the end of entire_episodelist
 entire_episodelist.extend( entire_episodelist )
 
 # Get osmc current playlist and clear it           # REMOVE ON TEST 
