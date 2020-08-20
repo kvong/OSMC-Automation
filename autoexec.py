@@ -16,7 +16,7 @@ randomize = 1
 sequential = 0
 
 # Set watch option
-watch_option = randomize
+watch_option = sequential
 
 # Pick show to play "HIMYM" or "FRIENDS"
 show = "DrakeAndJosh"
@@ -31,8 +31,8 @@ hour = datetime.datetime.now().hour
 if hour > 8 and hour < 21:
     # During day time set long playlist
     size = 18
-    show = "BigBang"
     show = "FRIENDS"
+    show = "BigBang"
     #show = "test"      # UNCOMMENT FOR TEST
 else:
     # Short playlist size for night
