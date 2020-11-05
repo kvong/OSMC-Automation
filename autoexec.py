@@ -184,7 +184,7 @@ for k in range(size):
 
         # Create a history log
         with open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_hist.dat", "a") as f_hist:
-            f_hist.write('%d\n' % (start))
+            f_hist.write('%d\n' % ( start + k ))
 
     # Sleep until episode ends         # REMOVE ON TEST 
     time.sleep( episode_duration )     # REMOVE ON TEST 
