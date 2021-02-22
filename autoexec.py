@@ -20,6 +20,7 @@ sequential = 0
 watch_option = randomize
 
 # Pick show to play "HIMYM" or "FRIENDS"
+show = "HIMYM"
 show = "DrakeAndJosh"
 show = "BigBang"
 show = "FRIENDS"
@@ -32,7 +33,6 @@ hour = datetime.datetime.now().hour
 if hour > 5 and hour < 21:
     # During day time set long playlist
     size = 9
-    show = "FRIENDS"
     show = "BigBang"
     #show = "test"      # UNCOMMENT FOR TEST
 else:
@@ -59,6 +59,8 @@ else:
 # Set a random play point initially to 0
 random_point = 0
 
+has_reset = False
+
 if ( watch_option == sequential ):
     # Watch with bookmarks
     # Open to read number from bookmark.dat as an integer
@@ -68,6 +70,9 @@ if ( watch_option == sequential ):
 elif ( watch_option == randomize ):
     mem_filename = "/home/osmc/.kodi/userdata/Automation.dat/" + show + "_mem.dat"
     random_point, available, available_extend, block_start, block_stop, open_index = Scheduler.RandomFirstFit(mem_filename, episodes, size)
+    if ( len(open_index) == 0  ):
+        with open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_hist.dat", "a") as f_hist:
+            f_hist.write("Block reset\n")
     start = random_point
      
 episodelist = []
