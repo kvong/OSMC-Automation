@@ -13,8 +13,8 @@ from random import *
 import numpy as np
 
 # Watch option constants
-randomize = 1
-sequential = 0
+randomize = 0
+sequential = 1
 
 # Set watch option
 watch_option = randomize
@@ -24,7 +24,16 @@ show = "HIMYM"
 show = "DrakeAndJosh"
 show = "BigBang"
 show = "FRIENDS"
-show = "test"
+show = "test"   # UNCOMMENT FOR TEST
+
+selected_show = ""
+with open("/home/osmc/.kodi/userdata/Automation.dat/selected_show.dat", "r") as f:
+    selected_show = f.readline().strip("\n")
+with open("/home/osmc/.kodi/userdata/Automation.dat/selected_show.dat", "w") as f:
+    f.write("");
+
+if selected_show:
+    show = selected_show
 
 # Get current time of day
 hour = datetime.datetime.now().hour
@@ -33,12 +42,14 @@ hour = datetime.datetime.now().hour
 if hour > 5 and hour < 21:
     # During day time set long playlist
     size = 9
-    show = "BigBang"
+    if not selected_show:
+        show = "BigBang"
     #show = "test"      # UNCOMMENT FOR TEST
 else:
     # Short playlist size for night
-    size = 9
-    show = "FRIENDS"
+    size = 4
+    if not selected_show:
+        show = "FRIENDS"
     #show = "test"      # UNCOMMENT FOR TEST
 
 # Directory where our videos are located
