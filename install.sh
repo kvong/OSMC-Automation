@@ -6,6 +6,10 @@ if [ $choice == 'y' ] || [ $choice == 'Y' ] || [ $choice == 'yes' ] || [ $choice
 then
     echo Updating repos...
     sudo apt-get -y update
+    echo Installing nvm
+    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash && nvm install stable
+    echo Copying over node server
+    cp -r ./node-server ~/
     echo Copying over Automation.dat...
     cp -r ./Automation.dat ~/.kodi/userdata/
     echo Copying over autoexec.py...
@@ -20,7 +24,9 @@ then
     ./configure
     make
     sudo make install
-    echo OSMC-Automation completed. Rebooting in 5 seconds.
-    sleep 5s
-    reboot
+    cd ~/node-server/
+    npm install
+    cd
+    echo OSMC-Automation completed. Reboot to see changes.
+    echo Remember auto start the node server from /etc/rc.local
 fi
