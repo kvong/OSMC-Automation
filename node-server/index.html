@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>Root</title>
+    </head>
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <style>
+    .container {
+        max-height: 100vh;
+    }
+
+    .row {
+        height: 80vh;
+        max-width: 500px;
+        margin: auto;
+    }
+
+    .episodeButton {
+        width: 100%;
+        height: auto;
+        background-repeat: no-repeat;
+        background-size: 100%;
+        background-position: center;
+        margin-bottom: 20px;
+    }
+    </style>
+    <body>
+        <div class="container">
+            <h1>Select a show to play: </h1>
+            <div class="row">
+                <a href="/friends" style="background-image: url('/covers/friends.jpg');" class="col-xs-12 episodeButton">
+                </a>
+                <a href="/bigbang" style="background-image: url('/covers/bigbang.jpg');" class="col-xs-12 episodeButton">
+                </a>
+                <a href="/himym" style="background-image: url('/covers/himym.png');" class="col-xs-12 episodeButton">
+                </a>
+            </div>
+    </body>
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+</html>

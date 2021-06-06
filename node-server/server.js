@@ -2,6 +2,9 @@ const express = require('express');
 const fs = require("fs");
 const app = express();
 const exec = require('child_process').exec;
+const path = require('path');
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 function execute(command, callback){
         exec(command, function(error, stdout, stderr){ callback(stdout);  });
@@ -9,7 +12,7 @@ function execute(command, callback){
 
 
 app.get('/', function( req, res ) {
-    res.send('Hello World');
+    res.sendFile( '/home/osmc/node-server/index.html' );
 })
 
 // Play FRIENDS
