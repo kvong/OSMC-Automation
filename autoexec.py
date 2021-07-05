@@ -81,9 +81,11 @@ if ( watch_option == sequential ):
 elif ( watch_option == randomize ):
     mem_filename = "/home/osmc/.kodi/userdata/Automation.dat/" + show + "_mem.dat"
     random_point, available, available_extend, block_start, block_stop, open_index = Scheduler.RandomFirstFit(mem_filename, episodes, size)
-    if ( len(open_index) == 0  ):
-        with open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_hist.dat", "a") as f_hist:
-            f_hist.write("Block reset\n")
+
+    # Write show history
+    # if ( len(open_index) == 0  ):
+    #     with open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_hist.dat", "a") as f_hist:
+    #         f_hist.write("Block reset\n")
     start = random_point
      
 episodelist = []
@@ -198,9 +200,9 @@ for k in range(size):
             else:
                 f_info.write('  %d. %s\n' % ( i + 1, current_playlist[i]))
 
-        # Create a history log
-        with open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_hist.dat", "a") as f_hist:
-            f_hist.write('%d\n' % ( start + k ))
+        # Write a history log
+        # with open("/home/osmc/.kodi/userdata/Automation.dat/" + show + "_hist.dat", "a") as f_hist:
+        #     f_hist.write('%d\n' % ( start + k ))
 
     # Sleep until episode ends         # REMOVE ON TEST 
     time.sleep( episode_duration )     # REMOVE ON TEST 
